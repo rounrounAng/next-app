@@ -7,10 +7,25 @@ import 'antd/dist/antd.css'
 import 'amis/lib/themes/cxd.css';
 import 'amis/lib/helper.css';
 import 'amis/sdk/iconfont.css';
-import { render } from 'amis'
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+
 const Home = ({ data }: { data: any }) => {
-  console.log(data);
-  const renderPage = render(data)
+  const [page, setPage] = useState<any>();
+  const handleAmis = useCallback(async () => {
+    if (window?.document) {
+      const { render } = await import("amis");
+      const renderPage = render(data)
+      return <>{renderPage}</>
+    }
+  }, [data]);
+
+  useEffect(() => {
+    handleAmis().then((page) => {
+      setPage(page)
+    })
+  }, [handleAmis])
+  console.log('page', page);
+
 
   return (
     <div className={styles.container}>
@@ -22,21 +37,11 @@ const Home = ({ data }: { data: any }) => {
 
       <main className={styles.main}>
         <Button type='primary'>按钮</Button>
+        <div id='amis' >{page}</div>
 
       </main>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
+
     </div>
   )
 }
